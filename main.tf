@@ -73,11 +73,16 @@ resource "aws_lambda_permission" "api_gateway" {
 resource "aws_api_gateway_deployment" "api_deploy" {
   depends_on = [aws_api_gateway_integration.lambda_integration]
   rest_api_id = aws_api_gateway_rest_api.api.id
-  stage_name  = "prod"
 }
 
-resource "aws_s3_bucket" "lambda_bucket" {
-  bucket = "lambda-terraform-demo-bucket-12345"
+resource "aws_api_gateway_stage" "prod_stage" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  deployment_id = aws_api_gateway_deployment.api_deploy.id
+  stage_name = "prod"
+}
+
+resource "aws_s3_bucket" "cletus125_lambda_bucket" {
+  bucket = "cletus125-lambda-terraform-demo-bucket-12345"
 }
 
 resource "aws_iam_policy" "lambda_s3_access" {
@@ -91,7 +96,7 @@ resource "aws_iam_policy" "lambda_s3_access" {
         "s3:PutObject"
       ],
       Effect   = "Allow",
-      Resource = "${aws_s3_bucket.lambda_bucket.arn}/*"
+      Resource = "${aws_s3_bucket.cletus125_lambda_bucket.arn}/*"
     }]
   })
 }
